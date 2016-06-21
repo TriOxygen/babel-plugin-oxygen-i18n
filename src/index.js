@@ -10,7 +10,7 @@ const KEY = 'OXYGEN_I18N'
 
 const DEFAULT_OPTIONS = {
   identifier: 'addTranslations',
-  bundleFile: 'messages.js',
+  bundleFile: 'messages.json',
   cacheDir: 'tmp/cache/'
 };
 
@@ -24,6 +24,8 @@ export default function plugin(context) {
     visitor: visitor(context),
   };
 }
+
+let _timer = null;
 
 
 function visitor(context) {
@@ -51,10 +53,20 @@ function visitor(context) {
           delete context[KEY].cache[filename];
         }
         if (Object.keys(context[KEY].cache).length > 0 && this.opts.bundleFile) {
-          const bundleFile = join(process.cwd(), this.opts.bundleFile);
-          mkDirPSync(dirname(bundleFile));
-          const bundleMessages = buildMessages(context[KEY].cache, this.opts);
-          writeFileSync(bundleFile, bundleMessages, { encoding: 'utf8' });
+          if (_timer) {
+            clearTimeout(_timer);
+          }
+          _timer = setTimeout(() => {
+            const { bundleFile, statsFile} = this.opts;
+            mkDirPSync(dirname(bundleFile));
+            const {output, collisions, stats} = buildMessages(context[KEY].cache, !!statsFile);
+            // console.log(statsFile, { collisions, stats })
+            if (statsFile) {
+              writeFileSync(statsFile, JSON.stringify({ collisions, stats }, undefined, '  '), { encoding: 'utf8'})
+            }
+            writeFileSync(bundleFile, output, { encoding: 'utf8' });
+            _timer = null;
+          }, 150);
         }
         context[KEY].visiting[filename] = false;
       },
@@ -95,6 +107,10 @@ function buildOptions(options, filename) {
     }
 
     opts.context = contextFileCache[file];
+  }
+  opts.bundleFile = join(process.cwd(), opts.bundleFile);
+  if (opts.statsFile) {
+    opts.statsFile = join(process.cwd(), opts.statsFile);
   }
 
   return opts;
