@@ -1,6 +1,10 @@
 {
   "name": "babel-plugin-oxygen-i18n",
+<<<<<<< HEAD
   "version": "0.1.1",
+=======
+  "version": "1.0.1",
+>>>>>>> 98e31e2bd03279a53e6d064709467eec4cc40731
   "description": "",
   "main": "lib/index.js",
   "scripts": {
