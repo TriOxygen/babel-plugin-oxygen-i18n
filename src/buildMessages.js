@@ -28,7 +28,7 @@ export default function buildMessages(cache, buildStats) {
   const output = {};
   Object.keys(dict).forEach(locale => {
     output[locale] = output[locale] || [];
-    Object.keys(dict[locale]).sort((a, b) => a.localeCompare(b)).forEach(key => {
+    Object.keys(dict[locale]).sort((a, b) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase())).forEach(key => {
       const value = dict[locale][key];
       const escapedKey = key.replace(/"/g, '\\"');
       const escapedValue = value.replace(/"/g, '\\"');
