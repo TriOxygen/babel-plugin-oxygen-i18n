@@ -11,7 +11,8 @@ const KEY = 'OXYGEN_I18N'
 const DEFAULT_OPTIONS = {
   identifier: 'addTranslations',
   bundleFile: 'messages.json',
-  cacheDir: 'tmp/cache/'
+  cacheDir: 'tmp/cache/',
+  generate: true
 };
 
 export default function plugin(context) {
@@ -52,7 +53,7 @@ function visitor(context) {
         } else {
           delete context[KEY].cache[filename];
         }
-        if (Object.keys(context[KEY].cache).length > 0 && this.opts.bundleFile) {
+        if (this.opts.generate && Object.keys(context[KEY].cache).length > 0 && this.opts.bundleFile) {
           if (_timer) {
             clearTimeout(_timer);
           }
